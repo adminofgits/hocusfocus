@@ -28,11 +28,17 @@ jobs:
             .build/repositories
           key: swift-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.version }}-${{ hashFiles('Package.resolved') }}
       - run: just test
-      - run: just build
-      - run: just check-config
-      - name: Archive app and CLI with executable permissions
-        run: ditto -c -k --sequesterRsrc dist HocusFocus-ci.zip
-      - uses: actions/upload-artifact@v7
+  release-notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
         with:
-          name: HocusFocus-macos-${{ runner.arch }}
-          path: HocusFocus-ci.zip
+          fetch-depth: 0
+      - name: Set up git-cliff
+        uses: orhun/git-cliff-action@v4
+        with:
+          version: latest
+          args: --unreleased --strip header
+        env:
+          OUTPUT: ${{ runner.temp }}/hocusfocus-preview.md
+      - run: PATH="$RUNNER_TEMP/git-cliff/bin:$PATH" bash scripts/test-release-notes.sh

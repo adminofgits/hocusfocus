@@ -9,6 +9,8 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: extractions/setup-just@v4
       - name: Set app version
         shell: bash
@@ -32,17 +34,33 @@ jobs:
           cp dist/hocusfocus LICENSE "$staging/"
           ditto -c -k --sequesterRsrc "$staging" "$archive"
           rm -rf "$staging"
+      - name: Generate release notes
+        id: changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          version: latest
+          args: --current --strip header
+        env:
+          OUTPUT: ${{ runner.temp }}/hocusfocus-changes.md
       - name: Publish release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGELOG_FILE: ${{ steps.changelog.outputs.changelog }}
         shell: bash
         run: |
           notes="$(mktemp)"
-          cat > "$notes" <<'NOTES'
+          cat "$CHANGELOG_FILE" > "$notes"
+          cat >> "$notes" <<'NOTES'
+
+          ## Installation
+
           Native macOS app and CLI, built for the architecture named in the archive.
 
-          This build is ad-hoc signed and is not notarized. Grant HocusFocus
-          Accessibility access after placing it at its intended installation path.
+          Download and unzip the archive for your Mac. Move HocusFocus.app to
+          /Applications, open it, and enable HocusFocus in System Settings →
+          Privacy & Security → Accessibility. Preferences live in the menu bar.
+
+          This build is ad-hoc signed and is not notarized.
           NOTES
           gh release create "$GITHUB_REF_NAME" dist/HocusFocus-*.zip --verify-tag --notes-file "$notes"
           rm -f "$notes"

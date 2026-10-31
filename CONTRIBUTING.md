@@ -174,8 +174,14 @@ changes. Follow [AI_POLICY.md](AI_POLICY.md) for AI assistance.
 
 ## Releases
 
-A `vMAJOR.MINOR.PATCH` tag triggers the release workflow. It tests and packages
-the app and CLI for the macOS runner's architecture. The archive includes license
-notices. These are ad-hoc signed builds; the workflow does not notarize them or
-claim Developer ID signing. A maintainer must explicitly authorize tagging or
+Main and pull request CI compile and test the source without producing downloads.
+A `vMAJOR.MINOR.PATCH` tag triggers the [release workflow](.github/workflows/release.yml).
+It tests and packages the app and CLI for the macOS runner's architecture, then
+publishes a GitHub Release with the ZIP and generated notes. [cliff.toml](cliff.toml)
+defines Conventional Commit groups and exclusions. Preview unreleased notes with
+`just release-notes`; `just test-release-notes` checks grouping and tag boundaries.
+Both use git-cliff from `mise install`. Notes are generated from Git history;
+there is no separate changelog to maintain. The archive includes license notices.
+These are ad-hoc signed builds; the workflow does not notarize them or claim
+Developer ID signing. A maintainer must explicitly authorize tagging or
 publishing a release.
