@@ -1,0 +1,48 @@
+name: Release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: extractions/setup-just@v4
+      - name: Set app version
+        shell: bash
+        run: |
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "Expected a vMAJOR.MINOR.PATCH tag" >&2
+            exit 1
+          fi
+          release_version="${BASH_REMATCH[1]}"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $release_version" Resources/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $release_version" Resources/Info.plist
+      - run: just test
+      - run: just build
+      - run: just check-config
+      - name: Archive app and CLI
+        shell: bash
+        run: |
+          archive="dist/HocusFocus-${GITHUB_REF_NAME}-macos-$(uname -m).zip"
+          staging="$(mktemp -d)"
+          cp -R dist/HocusFocus.app "$staging/"
+          cp dist/hocusfocus LICENSE "$staging/"
+          ditto -c -k --sequesterRsrc "$staging" "$archive"
+          rm -rf "$staging"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          notes="$(mktemp)"
+          cat > "$notes" <<'NOTES'
+          Native macOS app and CLI, built for the architecture named in the archive.
+
+          This build is ad-hoc signed and is not notarized. Grant HocusFocus
+          Accessibility access after placing it at its intended installation path.
+          NOTES
+          gh release create "$GITHUB_REF_NAME" dist/HocusFocus-*.zip --verify-tag --notes-file "$notes"
+          rm -f "$notes"

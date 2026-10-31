@@ -1,0 +1,38 @@
+name: Swift
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: swift-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: extractions/setup-just@v4
+      - name: Toolchain
+        id: toolchain
+        run: |
+          swift --version
+          echo "version=$(swift --version | shasum -a 256 | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v6
+        with:
+          path: |
+            .build/cache
+            .build/checkouts
+            .build/repositories
+          key: swift-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.version }}-${{ hashFiles('Package.resolved') }}
+      - run: just test
+      - run: just build
+      - run: just check-config
+      - name: Archive app and CLI with executable permissions
+        run: ditto -c -k --sequesterRsrc dist HocusFocus-ci.zip
+      - uses: actions/upload-artifact@v7
+        with:
+          name: HocusFocus-macos-${{ runner.arch }}
+          path: HocusFocus-ci.zip

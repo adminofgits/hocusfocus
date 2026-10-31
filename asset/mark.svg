@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="HocusFocus">
+<title>HocusFocus</title>
+<path d="M27.0 8.0 L17.0 8.0 C12.0 8.0 8.0 12.0 8.0 17.0 L8.0 27.0" fill="none" stroke="#B78CFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M37.0 56.0 L47.0 56.0 C52.0 56.0 56.0 52.0 56.0 47.0 L56.0 37.0" fill="none" stroke="#B78CFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M38.0 16.0 L45.0 16.0 C47.0 16.0 48.0 17.0 48.0 19.0 L48.0 26.0" fill="none" stroke="#B78CFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16.0 38.0 L16.0 45.0 C16.0 47.0 17.0 48.0 19.0 48.0 L26.0 48.0" fill="none" stroke="#B78CFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M32.0 19.0 L35.5 28.5 L45.0 32.0 L35.5 35.5 L32.0 45.0 L28.5 35.5 L19.0 32.0 L28.5 28.5 Z" fill="#E1D2FF"/>
+</svg>

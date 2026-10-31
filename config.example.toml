@@ -1,0 +1,15 @@
+# Stay over a window for this long before it receives focus.
+[focus]
+delay_ms = 400
+# Set false to focus without bringing the window above other windows.
+raise_window = true
+
+# "only" focuses listed apps; "except" focuses everything else.
+# Names are case-insensitive. Bundle IDs are more reliable than names.
+[apps]
+mode = "only"
+list = ["Ghostty"]
+
+[feedback]
+# Choose "off", "sweep", "glow", or "spark". Preview styles in the menu bar.
+cursor_style = "sweep"
