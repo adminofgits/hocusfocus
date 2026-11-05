@@ -30,7 +30,7 @@ stop:
 
 # Reset only HocusFocus's Accessibility authorization; keep the build intact.
 clean:
-    tccutil reset Accessibility io.bitsugar.hocusfocus
+    zsh scripts/reset-accessibility.sh
 
 # Check the bundled example without starting focus switching.
 check-config:

@@ -14,6 +14,10 @@ struct AppIdentityTests {
         let script = try String(contentsOf: root.appendingPathComponent("scripts/build-app.sh"), encoding: .utf8)
         #expect(script.contains("--identifier \(AppControl.bundleID)"))
         let recipes = try String(contentsOf: root.appendingPathComponent("justfile"), encoding: .utf8)
-        #expect(recipes.contains("tccutil reset Accessibility \(AppControl.bundleID)"))
+        #expect(recipes.contains("zsh scripts/reset-accessibility.sh"))
+        let resetScript = try String(
+            contentsOf: root.appendingPathComponent("scripts/reset-accessibility.sh"), encoding: .utf8
+        )
+        #expect(resetScript.contains("tccutil reset Accessibility \(AppControl.bundleID)"))
     }
 }
