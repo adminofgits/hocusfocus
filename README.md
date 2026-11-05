@@ -72,4 +72,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, and troubleshoo
 
 ## License
 
-[MIT](LICENSE).
+[MIT](LICENSE)
