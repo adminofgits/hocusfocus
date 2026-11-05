@@ -50,7 +50,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         model.onReload = { [weak self] in self?.reload() }
         model.onEdit = { NSWorkspace.shared.open(ConfigLocation.url) }
         model.onPermissions = { [weak self] in
-            self?.accessibilityPermission.request(showSettings: true)
+            Task { @MainActor [weak self] in
+                await self?.requestAccessibility(showSettings: true)
+            }
         }
         model.onQuit = { [weak self] in
             self?.closePanel()
@@ -73,9 +75,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         }
         controller.start()
         updateStatus()
-        DispatchQueue.main.async { [weak self] in
-            self?.accessibilityPermission.request()
+        Task { @MainActor [weak self] in
+            await self?.requestAccessibility()
         }
+    }
+
+    @MainActor private func requestAccessibility(showSettings: Bool = false) async {
+        let result = await accessibilityPermission.requestWithRetry(showSettings: showSettings)
+        if result != noErr {
+            model.message = "macOS could not register HocusFocus (error \(result)). Use the Accessibility permission button to retry."
+        }
+        updateStatus()
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {
